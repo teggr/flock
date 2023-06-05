@@ -13,6 +13,8 @@ import java.lang.reflect.InvocationTargetException;
 @Slf4j
 public class TemplateEngine {
 
+    private String basePackage = null;
+
     public String process(String templateName, TemplateModel model) {
         StringWriter writer = new StringWriter();
         process(templateName, model, writer);
@@ -58,6 +60,10 @@ public class TemplateEngine {
 
     private Template resolveTemplate(String templateName) {
         try {
+            log.info("basePackage={},templateName={}", basePackage, templateName);
+            if (basePackage != null) {
+                templateName = basePackage + "." + templateName;
+            }
             return (Template) Class.forName(templateName).getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -72,4 +78,7 @@ public class TemplateEngine {
         }
     }
 
+    public void setBasePackage(String basePackage) {
+        this.basePackage = basePackage;
+    }
 }
